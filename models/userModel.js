@@ -23,7 +23,36 @@ const createUser = async (nom, email, mot_de_passe, role) => {
   return result.rows[0];
 };
 
+const getUserById = async (id) => {
+  const result = await pool.query("SELECT * FROM users WHERE id = $1", [id]);
+  return result.rows[0];
+};
+
+const updateUser = async (id, nom, email, role, mot_de_passe) => {
+  let query = "UPDATE users SET nom = $1, email = $2, role = $3";
+  let params = [nom, email, role];
+
+  if (mot_de_passe) {
+    const hashedPassword = await bcrypt.hash(mot_de_passe, 10);
+    query += ", mot_de_passe = $4 WHERE id = $5 RETURNING *";
+    params.push(hashedPassword, id);
+  } else {
+    query += " WHERE id = $4 RETURNING *";
+    params.push(id);
+  }
+
+  const result = await pool.query(query, params);
+  return result.rows[0];
+};
+
+const deleteUser = async (id) => {
+  await pool.query("DELETE FROM users WHERE id = $1", [id]);
+};
+
 module.exports = {
   getAllUsers,
   createUser,
+  getUserById,
+  updateUser,
+  deleteUser,
 };
