@@ -1,3 +1,5 @@
+const { sendInterventionEmail } = require("../utils/emailSender");
+const userModel = require("../models/userModel");
 const interventionModel = require("../models/interventionModel");
 
 const validateInterventionData = (data) => {
@@ -19,6 +21,17 @@ const createIntervention = async (req, res) => {
     const newIntervention = await interventionModel.createIntervention({
       ...req.body,
       created_by: req.user.id,
+    });
+    // Récupérer les infos du technicien
+    const technicien = await userModel.getUserById(req.body.technicien_id);
+
+    // Envoyer l'email
+    await sendInterventionEmail(technicien.email, {
+      client_nom: newIntervention.client_nom,
+      site_nom: newIntervention.site_nom,
+      date_planifiee: newIntervention.date_planifiee,
+      type_visite: newIntervention.type_visite,
+      localisation: newIntervention.localisation,
     });
     res.status(201).json(newIntervention);
   } catch (err) {

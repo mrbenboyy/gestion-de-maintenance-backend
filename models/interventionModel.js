@@ -10,7 +10,6 @@ const createIntervention = async (interventionData) => {
     created_by,
   } = interventionData;
 
-  // Vérifier la cohérence région (même si la contrainte SQL est enlevée)
   const site = await pool.query("SELECT region FROM sites WHERE id = $1", [
     site_id,
   ]);
@@ -27,7 +26,11 @@ const createIntervention = async (interventionData) => {
     `INSERT INTO interventions 
     (client_id, site_id, technicien_id, date_planifiee, type_visite, created_by) 
     VALUES ($1, $2, $3, $4, $5, $6) 
-    RETURNING *`,
+    RETURNING 
+      *,
+      (SELECT nom FROM clients WHERE id = $1) as client_nom,
+      (SELECT nom || ' - ' || adresse FROM sites WHERE id = $2) as site_nom,
+      (SELECT localisation FROM sites WHERE id = $2) as localisation`,
     [client_id, site_id, technicien_id, date_planifiee, type_visite, created_by]
   );
   return result.rows[0];
