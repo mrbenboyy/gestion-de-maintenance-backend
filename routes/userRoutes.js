@@ -7,6 +7,12 @@ const checkRole = require("../middlewares/checkRole");
 router.get("/", authMiddleware, checkRole(["admin"]), userController.getUsers);
 router.post("/", authMiddleware, checkRole(["admin"]), userController.addUser);
 router.get(
+  "/techniciens",
+  authMiddleware,
+  checkRole(["admin", "responsable_planning"]),
+  userController.getTechniciens
+);
+router.get(
   "/:id",
   authMiddleware,
   checkRole(["admin"]),
