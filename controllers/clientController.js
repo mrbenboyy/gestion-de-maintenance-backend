@@ -9,6 +9,16 @@ const getClients = async (req, res) => {
   }
 };
 
+const getClientById = async (req, res) => {
+  try {
+    const client = await clientModel.getClientById(req.params.id);
+    if (!client) return res.status(404).json({ error: "Client non trouvé" });
+    res.json(client);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 const validateClientData = (data) => {
   const errors = [];
 
@@ -81,6 +91,7 @@ const deleteClient = async (req, res) => {
 
 module.exports = {
   getClients,
+  getClientById,
   addClient,
   updateClient,
   deleteClient,

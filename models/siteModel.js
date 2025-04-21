@@ -1,0 +1,84 @@
+const pool = require("../db");
+
+const createSite = async (siteData) => {
+  const {
+    nom,
+    client_id,
+    type_site,
+    adresse,
+    localisation,
+    nombre_visites_annuelles,
+  } = siteData;
+  const result = await pool.query(
+    `INSERT INTO sites 
+    (nom, client_id, type_site, adresse, localisation, nombre_visites_annuelles) 
+    VALUES ($1, $2, $3, $4, $5, $6) 
+    RETURNING *`,
+    [nom, client_id, type_site, adresse, localisation, nombre_visites_annuelles]
+  );
+  return result.rows[0];
+};
+
+const getSitesByClient = async (clientId) => {
+  const result = await pool.query(
+    `SELECT * FROM sites 
+    WHERE client_id = $1 
+    ORDER BY created_at DESC`,
+    [clientId]
+  );
+  return result.rows;
+};
+
+const getAllSites = async () => {
+  const result = await pool.query(`
+      SELECT s.*, c.nom as client_nom 
+      FROM sites s
+      JOIN clients c ON s.client_id = c.id
+      ORDER BY s.created_at DESC
+    `);
+  return result.rows;
+};
+
+const getSiteById = async (id) => {
+  const result = await pool.query(
+    `
+      SELECT s.*, c.nom as client_nom 
+      FROM sites s
+      JOIN clients c ON s.client_id = c.id
+      WHERE s.id = $1
+    `,
+    [id]
+  );
+  return result.rows[0];
+};
+
+const updateSite = async (id, siteData) => {
+  const { nom, type_site, adresse, localisation, nombre_visites_annuelles } =
+    siteData;
+  const result = await pool.query(
+    `UPDATE sites SET
+      nom = $1,
+      type_site = $2,
+      adresse = $3,
+      localisation = $4,
+      nombre_visites_annuelles = $5,
+      updated_at = CURRENT_TIMESTAMP
+    WHERE id = $6 
+    RETURNING *`,
+    [nom, type_site, adresse, localisation, nombre_visites_annuelles, id]
+  );
+  return result.rows[0];
+};
+
+const deleteSite = async (id) => {
+  await pool.query("DELETE FROM sites WHERE id = $1", [id]);
+};
+
+module.exports = {
+  createSite,
+  getSitesByClient,
+  getAllSites,
+  getSiteById,
+  updateSite,
+  deleteSite,
+};

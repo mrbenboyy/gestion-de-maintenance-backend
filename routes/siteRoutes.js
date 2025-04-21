@@ -1,38 +1,40 @@
 const express = require("express");
 const router = express.Router();
-const clientController = require("../controllers/clientController");
+const siteController = require("../controllers/siteController");
 const authMiddleware = require("../middlewares/authMiddleware");
 const checkRole = require("../middlewares/checkRole");
 
+router.post("/", authMiddleware, checkRole(["admin"]), siteController.addSite);
 router.get(
   "/",
   authMiddleware,
-  checkRole(["admin"]),
-  clientController.getClients
+  checkRole(["admin", "assistante"]),
+  siteController.getAllSites
 );
+
 router.get(
   "/:id",
   authMiddleware,
-  checkRole(["admin"]),
-  clientController.getClientById
+  checkRole(["admin", "assistante"]),
+  siteController.getSiteById
 );
-router.post(
-  "/",
+router.get(
+  "/client/:clientId",
   authMiddleware,
-  checkRole(["admin"]),
-  clientController.addClient
+  checkRole(["admin", "assistante"]),
+  siteController.getClientSites
 );
 router.put(
   "/:id",
   authMiddleware,
   checkRole(["admin"]),
-  clientController.updateClient
+  siteController.updateSite
 );
 router.delete(
   "/:id",
   authMiddleware,
   checkRole(["admin"]),
-  clientController.deleteClient
+  siteController.deleteSite
 );
 
 module.exports = router;

@@ -10,6 +10,11 @@ const getAllClients = async () => {
   return result.rows;
 };
 
+const getClientById = async (id) => {
+  const result = await pool.query("SELECT * FROM clients WHERE id = $1", [id]);
+  return result.rows[0];
+};
+
 const createClient = async (clientData) => {
   const { nom, telephone, fax, adresse, contrat, sous_type_contrat } =
     clientData;
@@ -48,6 +53,7 @@ const deleteClient = async (id) => {
 
 module.exports = {
   getAllClients,
+  getClientById,
   createClient,
   updateClient,
   deleteClient,
