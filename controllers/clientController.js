@@ -66,10 +66,8 @@ const updateClient = async (req, res) => {
   }
 };
 
-// Fonction utilitaire pour les erreurs de base de données
 const handleDatabaseError = (err, res) => {
   if (err.code === "23505") {
-    // Violation d'unicité PostgreSQL
     res
       .status(400)
       .json({ error: "Un client avec ces informations existe déjà" });

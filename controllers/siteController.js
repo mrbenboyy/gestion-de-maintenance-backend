@@ -23,7 +23,6 @@ const validateSiteData = (data) => {
   return errors;
 };
 
-// Fonction de gestion des erreurs
 const handleSiteError = (err, res) => {
   if (err.code === "23503") {
     res.status(400).json({ error: "Client introuvable" });

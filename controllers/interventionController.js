@@ -22,10 +22,8 @@ const createIntervention = async (req, res) => {
       ...req.body,
       created_by: req.user.id,
     });
-    // Récupérer les infos du technicien
     const technicien = await userModel.getUserById(req.body.technicien_id);
 
-    // Envoyer l'email
     await sendInterventionEmail(technicien.email, {
       client_nom: newIntervention.client_nom,
       site_nom: newIntervention.site_nom,

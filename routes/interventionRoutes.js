@@ -21,7 +21,7 @@ router.put(
 router.patch(
   "/:id/status",
   authMiddleware,
-  checkRole(["admin", "responsable_planning", "technicien"]), // Retirez 'assistante'
+  checkRole(["admin", "responsable_planning", "technicien"]),
   interventionController.updateStatus
 );
 

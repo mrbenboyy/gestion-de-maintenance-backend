@@ -47,7 +47,6 @@ const updateIntervention = async (id, updateData) => {
     status,
   } = updateData;
 
-  // Vérification région si technicien ou site modifié
   if (technicien_id || site_id) {
     const siteId =
       site_id ||
