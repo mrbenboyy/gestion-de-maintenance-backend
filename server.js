@@ -10,6 +10,7 @@ const familleRoutes = require("./routes/familleRoutes");
 const articleRoutes = require("./routes/articleRoutes");
 const appareilRoutes = require("./routes/appareilRoutes");
 const ficheRoutes = require("./routes/ficheRoutes");
+const bonCommandeRoutes = require("./routes/bonCommandeRoutes");
 
 dotenv.config();
 const app = express();
@@ -26,6 +27,7 @@ app.use("/api/familles", familleRoutes);
 app.use("/api/articles", articleRoutes);
 app.use("/api/appareils", appareilRoutes);
 app.use("/api/fiches", ficheRoutes);
+app.use("/api/bons-commande", bonCommandeRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
