@@ -79,8 +79,25 @@ const createFicheVerification = async (ficheData) => {
 
     const ficheId = ficheResult.rows[0].id;
 
-    // Insertion des articles utilisés
+    // Insertion des articles utilisés + gestion stock
     for (const article of articles) {
+      // Vérification stock
+      const currentStock = await client.query(
+        "SELECT stock FROM articles WHERE code = $1 FOR UPDATE",
+        [article.code]
+      );
+
+      if (currentStock.rows[0].stock < article.quantite) {
+        throw new Error(`Stock insuffisant pour l'article ${article.code}`);
+      }
+
+      // Mise à jour stock
+      await client.query(
+        "UPDATE articles SET stock = stock - $1 WHERE code = $2",
+        [article.quantite, article.code]
+      );
+
+      // Insertion relation
       await client.query(
         `INSERT INTO fiche_articles 
         (fiche_id, article_code, quantite) 
@@ -148,21 +165,42 @@ const updateFicheVerification = async (id, updateData) => {
   try {
     await client.query("BEGIN");
 
-    // Mise à jour de la fiche principale
-    const ficheResult = await client.query(
-      `UPDATE fiches_verification SET
-        observations = COALESCE($1, observations),
-        signature_base64 = COALESCE($2, signature_base64)
-      WHERE id = $3 RETURNING *`,
-      [observations, signature_base64, id]
+    // Récupération anciens articles
+    const oldArticles = await client.query(
+      "SELECT article_code, quantite FROM fiche_articles WHERE fiche_id = $1",
+      [id]
     );
 
-    // Suppression des anciennes relations
+    // Restauration stock anciens articles
+    for (const oldArt of oldArticles.rows) {
+      await client.query(
+        "UPDATE articles SET stock = stock + $1 WHERE code = $2",
+        [oldArt.quantite, oldArt.article_code]
+      );
+    }
+
+    // Suppression anciennes relations
     await client.query("DELETE FROM fiche_articles WHERE fiche_id = $1", [id]);
     await client.query("DELETE FROM fiche_appareils WHERE fiche_id = $1", [id]);
 
-    // Réinsertion des nouvelles données
+    // Insertion nouveaux articles + gestion stock
     for (const article of articles) {
+      // Vérification stock
+      const currentStock = await client.query(
+        "SELECT stock FROM articles WHERE code = $1 FOR UPDATE",
+        [article.code]
+      );
+
+      if (currentStock.rows[0].stock < article.quantite) {
+        throw new Error(`Stock insuffisant pour l'article ${article.code}`);
+      }
+
+      // Mise à jour stock
+      await client.query(
+        "UPDATE articles SET stock = stock - $1 WHERE code = $2",
+        [article.quantite, article.code]
+      );
+
       await client.query(
         `INSERT INTO fiche_articles 
         (fiche_id, article_code, quantite) 
