@@ -25,6 +25,8 @@ const validateClientData = (data) => {
   if (!data.nom) errors.push("Le nom est obligatoire");
   if (!data.telephone) errors.push("Le téléphone est obligatoire");
   if (!data.adresse) errors.push("L'adresse est obligatoire");
+  if (!data.email) errors.push("L'email est obligatoire");
+  if (!data.mot_de_passe) errors.push("Le mot de passe est obligatoire");
   if (!["SAV", "Detection"].includes(data.contrat)) {
     errors.push("Type de contrat invalide");
   }

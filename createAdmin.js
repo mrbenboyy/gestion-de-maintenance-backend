@@ -18,14 +18,11 @@ async function createAdmin() {
     const email = await question("Email: ");
     const password = await question("Mot de passe: ");
 
-    // Vérification manuelle du mot de passe hashé
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     const admin = await userModel.createUser(
       nom,
       email,
-      hashedPassword, // On passe directement le hash généré
+      password, 
       "admin",
       null,
       null
