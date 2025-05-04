@@ -1,0 +1,19 @@
+bcrypt: npm install bcrypt
+jsonwebtoken: npm install jsonwebtoken
+
+query:
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  nom VARCHAR(100) NOT NULL,
+  email VARCHAR(100) UNIQUE NOT NULL,
+  mot_de_passe TEXT NOT NULL,
+  role VARCHAR(50) NOT NULL,
+  date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+nodemailer: npm i nodemailer
+
+
+creer un admin
+node createAdmin.js
+
