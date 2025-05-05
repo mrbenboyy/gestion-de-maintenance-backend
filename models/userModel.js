@@ -1,5 +1,7 @@
 const pool = require("../db");
 const bcrypt = require("bcrypt");
+const fs = require("fs").promises;
+const path = require("path");
 
 const getAllUsers = async () => {
   const result = await pool.query("SELECT * FROM users");
@@ -117,7 +119,29 @@ const getTechniciens = async () => {
   return result.rows;
 };
 
+const deleteUserImage = async (imagePath) => {
+  if (!imagePath) return;
+
+  const fullPath = path.join(__dirname, "..", imagePath);
+
+  try {
+    await fs.access(fullPath);
+    await fs.unlink(fullPath);
+  } catch (err) {
+    console.error(`Erreur suppression image: ${fullPath}`, err);
+  }
+};
+
 const deleteUser = async (id) => {
+  // Récupérer l'utilisateur avant suppression
+  const user = await pool.query("SELECT * FROM users WHERE id = $1", [id]);
+
+  if (user.rows.length > 0) {
+    // Supprimer l'image associée
+    await deleteUserImage(user.rows[0].image);
+  }
+
+  // Supprimer l'utilisateur
   await pool.query("DELETE FROM users WHERE id = $1", [id]);
 };
 
