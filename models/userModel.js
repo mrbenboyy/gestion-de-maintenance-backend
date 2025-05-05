@@ -11,7 +11,15 @@ const getUserById = async (id) => {
   return result.rows[0];
 };
 
-const createUser = async (nom, email, mot_de_passe, role, region, depot) => {
+const createUser = async (
+  nom,
+  email,
+  mot_de_passe,
+  role,
+  region,
+  depot,
+  image
+) => {
   const saltRounds = 10;
   const hashedPassword = await bcrypt.hash(mot_de_passe, saltRounds);
 
@@ -23,10 +31,10 @@ const createUser = async (nom, email, mot_de_passe, role, region, depot) => {
 
   const result = await pool.query(
     `INSERT INTO users 
-    (nom, email, mot_de_passe, role, region, depot) 
-    VALUES ($1, $2, $3, $4, $5, $6) 
+    (nom, email, mot_de_passe, role, region, depot, image) 
+    VALUES ($1, $2, $3, $4, $5, $6, $7) 
     RETURNING *`,
-    [nom, email, hashedPassword, role, region, depot]
+    [nom, email, hashedPassword, role, region, depot, image]
   );
   return result.rows[0];
 };
@@ -38,20 +46,65 @@ const updateUser = async (
   role,
   mot_de_passe,
   region,
-  depot
+  depot,
+  image
 ) => {
-  let query =
-    "UPDATE users SET nom = $1, email = $2, role = $3, region = $4, depot = $5";
-  let params = [nom, email, role, region, depot];
+  let setParts = [];
+  const params = [];
+  let paramIndex = 1;
 
-  if (mot_de_passe) {
-    const hashedPassword = await bcrypt.hash(mot_de_passe, 10);
-    query += ", mot_de_passe = $6 WHERE id = $7 RETURNING *";
-    params.push(hashedPassword, id);
-  } else {
-    query += " WHERE id = $6 RETURNING *";
-    params.push(id);
+  // Gérer chaque champ dynamiquement
+  if (nom !== undefined) {
+    setParts.push(`nom = $${paramIndex}`);
+    params.push(nom);
+    paramIndex++;
   }
+  if (email !== undefined) {
+    setParts.push(`email = $${paramIndex}`);
+    params.push(email);
+    paramIndex++;
+  }
+  if (role !== undefined) {
+    setParts.push(`role = $${paramIndex}`);
+    params.push(role);
+    paramIndex++;
+  }
+  if (region !== undefined) {
+    setParts.push(`region = $${paramIndex}`);
+    params.push(region);
+    paramIndex++;
+  }
+  if (depot !== undefined) {
+    setParts.push(`depot = $${paramIndex}`);
+    params.push(depot);
+    paramIndex++;
+  }
+  if (image !== undefined) {
+    setParts.push(`image = $${paramIndex}`);
+    params.push(image);
+    paramIndex++;
+  }
+
+  // Gérer le mot de passe séparément (hachage)
+  if (mot_de_passe !== undefined) {
+    const hashedPassword = await bcrypt.hash(mot_de_passe, 10);
+    setParts.push(`mot_de_passe = $${paramIndex}`);
+    params.push(hashedPassword);
+    paramIndex++;
+  }
+
+  if (setParts.length === 0) {
+    throw new Error("Aucun champ à mettre à jour");
+  }
+
+  // Ajouter l'ID à la fin des paramètres
+  params.push(id);
+  const query = `
+    UPDATE users 
+    SET ${setParts.join(", ")}
+    WHERE id = $${paramIndex}
+    RETURNING *
+  `;
 
   const result = await pool.query(query, params);
   return result.rows[0];

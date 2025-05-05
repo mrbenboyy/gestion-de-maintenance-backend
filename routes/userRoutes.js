@@ -3,9 +3,16 @@ const router = express.Router();
 const userController = require("../controllers/userController");
 const authMiddleware = require("../middlewares/authMiddleware");
 const checkRole = require("../middlewares/checkRole");
+const upload = require("../utils/upload");
 
 router.get("/", authMiddleware, checkRole(["admin"]), userController.getUsers);
-router.post("/", authMiddleware, checkRole(["admin"]), userController.addUser);
+router.post(
+  "/",
+  authMiddleware,
+  checkRole(["admin"]),
+  upload.single("image"),
+  userController.addUser
+);
 router.get(
   "/techniciens",
   authMiddleware,
@@ -22,6 +29,7 @@ router.put(
   "/:id",
   authMiddleware,
   checkRole(["admin"]),
+  upload.single("image"),
   userController.updateUser
 );
 router.delete(
