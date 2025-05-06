@@ -22,7 +22,13 @@ router.get(
 router.get(
   "/:id",
   authMiddleware,
-  checkRole(["admin"]),
+  (req, res, next) => {
+    if (req.user.role === "admin" || req.params.id === req.user.id.toString()) {
+      next();
+    } else {
+      res.status(403).json({ message: "Accès interdit" });
+    }
+  },
   userController.getUserById
 );
 router.put(
