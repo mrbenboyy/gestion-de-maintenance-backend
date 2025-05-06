@@ -3,6 +3,7 @@ const router = express.Router();
 const clientController = require("../controllers/clientController");
 const authMiddleware = require("../middlewares/authMiddleware");
 const checkRole = require("../middlewares/checkRole");
+const { uploadClient } = require("../utils/upload");
 
 router.get(
   "/",
@@ -20,12 +21,14 @@ router.post(
   "/",
   authMiddleware,
   checkRole(["admin"]),
+  uploadClient.single("image"),
   clientController.addClient
 );
 router.put(
   "/:id",
   authMiddleware,
   checkRole(["admin"]),
+  uploadClient.single("image"),
   clientController.updateClient
 );
 router.delete(
