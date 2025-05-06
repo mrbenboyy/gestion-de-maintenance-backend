@@ -6,15 +6,16 @@ const createSite = async (siteData) => {
     client_id,
     type_site,
     adresse,
-    localisation,
+    lat,
+    lng,
     nombre_visites_annuelles,
   } = siteData;
   const result = await pool.query(
     `INSERT INTO sites 
-    (nom, client_id, type_site, adresse, localisation, nombre_visites_annuelles) 
-    VALUES ($1, $2, $3, $4, $5, $6) 
+    (nom, client_id, type_site, adresse, lat, lng, nombre_visites_annuelles) 
+    VALUES ($1, $2, $3, $4, $5, $6, $7) 
     RETURNING *`,
-    [nom, client_id, type_site, adresse, localisation, nombre_visites_annuelles]
+    [nom, client_id, type_site, adresse, lat, lng, nombre_visites_annuelles]
   );
   return result.rows[0];
 };
@@ -53,19 +54,20 @@ const getSiteById = async (id) => {
 };
 
 const updateSite = async (id, siteData) => {
-  const { nom, type_site, adresse, localisation, nombre_visites_annuelles } =
+  const { nom, type_site, adresse, lat, lng, nombre_visites_annuelles } =
     siteData;
   const result = await pool.query(
     `UPDATE sites SET
       nom = $1,
       type_site = $2,
       adresse = $3,
-      localisation = $4,
-      nombre_visites_annuelles = $5,
+      lat = $4,
+      lng = $5,
+      nombre_visites_annuelles = $6,
       updated_at = CURRENT_TIMESTAMP
-    WHERE id = $6 
+    WHERE id = $7 
     RETURNING *`,
-    [nom, type_site, adresse, localisation, nombre_visites_annuelles, id]
+    [nom, type_site, adresse, lat, lng, nombre_visites_annuelles, id]
   );
   return result.rows[0];
 };

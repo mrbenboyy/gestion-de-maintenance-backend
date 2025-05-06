@@ -5,6 +5,8 @@ const validateSiteData = (data) => {
 
   if (!data.nom) errors.push("Le nom du site est obligatoire");
   if (!data.client_id) errors.push("Le client associé est obligatoire");
+  if (!data.lat) errors.push("La latitude est obligatoire");
+  if (!data.lng) errors.push("La longitude est obligatoire");
   if (
     !["commercial", "industriel", "public", "habitation"].includes(
       data.type_site
