@@ -18,7 +18,7 @@ const createUploader = (folder) => {
     fileFilter: (req, file, cb) => {
       file.mimetype.startsWith("image/")
         ? cb(null, true)
-        : cb(new Error("Seules les images sont autorisées"), false);
+        : cb(new Error("Seules les images sont autorisées (max 5MB)"), false);
     },
   });
 };
