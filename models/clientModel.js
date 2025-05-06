@@ -5,8 +5,8 @@ const path = require("path");
 
 const getAllClients = async () => {
   const result = await pool.query(`
-    SELECT id, nom, telephone, fax, adresse, 
-           contrat, sous_type_contrat 
+    SELECT id, nom, email, telephone, fax, adresse, 
+           contrat, sous_type_contrat, image
     FROM clients 
     ORDER BY created_at DESC
   `);
