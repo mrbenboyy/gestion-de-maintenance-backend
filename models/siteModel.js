@@ -9,14 +9,23 @@ const createSite = async (siteData) => {
     lat,
     lng,
     nombre_visites_annuelles,
-    region
+    region,
   } = siteData;
   const result = await pool.query(
     `INSERT INTO sites 
     (nom, client_id, type_site, adresse, lat, lng, nombre_visites_annuelles, region) 
     VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
     RETURNING *`,
-    [nom, client_id, type_site, adresse, lat, lng, nombre_visites_annuelles, region]
+    [
+      nom,
+      client_id,
+      type_site,
+      adresse,
+      lat,
+      lng,
+      nombre_visites_annuelles,
+      region,
+    ]
   );
   return result.rows[0];
 };
@@ -33,11 +42,11 @@ const getSitesByClient = async (clientId) => {
 
 const getAllSites = async () => {
   const result = await pool.query(`
-      SELECT s.*, c.nom as client_nom 
-      FROM sites s
-      JOIN clients c ON s.client_id = c.id
-      ORDER BY s.created_at DESC
-    `);
+    SELECT s.*, c.nom as client_nom, c.image as client_image 
+    FROM sites s
+    JOIN clients c ON s.client_id = c.id
+    ORDER BY s.created_at DESC
+  `);
   return result.rows;
 };
 
@@ -55,8 +64,15 @@ const getSiteById = async (id) => {
 };
 
 const updateSite = async (id, siteData) => {
-  const { nom, type_site, adresse, lat, lng, nombre_visites_annuelles, region } =
-    siteData;
+  const {
+    nom,
+    type_site,
+    adresse,
+    lat,
+    lng,
+    nombre_visites_annuelles,
+    region,
+  } = siteData;
   const result = await pool.query(
     `UPDATE sites SET
       nom = $1,
