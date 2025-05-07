@@ -1,4 +1,6 @@
 const pool = require("../db");
+const path = require("path");
+const fs = require("fs").promises;
 
 const createFamille = async (nom, image) => {
   const existing = await pool.query("SELECT id FROM familles WHERE nom = $1", [

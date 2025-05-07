@@ -1,5 +1,7 @@
 const familleModel = require("../models/familleModel");
 const { uploadFamille } = require("../utils/upload");
+const fs = require("fs").promises;
+const path = require("path");
 
 const validateFamilleData = (nom) => {
   if (!nom || nom.trim().length === 0) {
