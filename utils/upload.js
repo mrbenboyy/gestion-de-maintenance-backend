@@ -27,4 +27,5 @@ module.exports = {
   uploadUser: createUploader("users"),
   uploadClient: createUploader("clients"),
   uploadFamille: createUploader("familles"),
+  uploadArticle: createUploader("articles"),
 };
