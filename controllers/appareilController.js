@@ -1,6 +1,7 @@
 const appareilModel = require("../models/appareilModel");
 const { uploadAppareil } = require("../utils/upload");
 const fs = require("fs").promises;
+const path = require("path");
 
 const validateAppareilData = (data) => {
   const errors = [];
