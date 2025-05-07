@@ -1,7 +1,6 @@
 const pool = require("../db");
 
-const createFamille = async (nom) => {
-  // Vérifier si la famille existe déjà
+const createFamille = async (nom, image) => {
   const existing = await pool.query("SELECT id FROM familles WHERE nom = $1", [
     nom,
   ]);
@@ -11,26 +10,28 @@ const createFamille = async (nom) => {
   }
 
   const result = await pool.query(
-    "INSERT INTO familles (nom) VALUES ($1) RETURNING *",
-    [nom]
+    "INSERT INTO familles (nom, image) VALUES ($1, $2) RETURNING *",
+    [nom, image]
   );
   return result.rows[0];
 };
 
 const getFamilleById = async (id) => {
-  const result = await pool.query("SELECT * FROM familles WHERE id = $1", [id]);
+  const result = await pool.query(
+    "SELECT *, image FROM familles WHERE id = $1",
+    [id]
+  );
   return result.rows[0];
 };
 
 const getAllFamilles = async () => {
   const result = await pool.query(
-    "SELECT * FROM familles ORDER BY created_at DESC"
+    "SELECT *, image FROM familles ORDER BY created_at DESC"
   );
   return result.rows;
 };
 
-const updateFamille = async (id, newNom) => {
-  // Vérifier conflit de nom
+const updateFamille = async (id, newNom, image) => {
   const conflict = await pool.query(
     "SELECT id FROM familles WHERE nom = $1 AND id != $2",
     [newNom, id]
@@ -41,13 +42,18 @@ const updateFamille = async (id, newNom) => {
   }
 
   const result = await pool.query(
-    "UPDATE familles SET nom = $1 WHERE id = $2 RETURNING *",
-    [newNom, id]
+    "UPDATE familles SET nom = $1, image = $2 WHERE id = $3 RETURNING *",
+    [newNom, image, id]
   );
   return result.rows[0];
 };
 
 const deleteFamille = async (id) => {
+  // Récupérer l'image avant suppression
+  const famille = await pool.query("SELECT image FROM familles WHERE id = $1", [
+    id,
+  ]);
+
   // Vérifier si utilisée dans articles/appareils
   const articles = await pool.query(
     "SELECT code FROM articles WHERE famille_id = $1 LIMIT 1",
@@ -58,6 +64,11 @@ const deleteFamille = async (id) => {
     throw new Error(
       "Impossible de supprimer : famille utilisée dans des articles"
     );
+  }
+
+  // Supprimer l'image associée
+  if (famille.rows[0]?.image) {
+    await fs.unlink(path.join(__dirname, "..", famille.rows[0].image));
   }
 
   await pool.query("DELETE FROM familles WHERE id = $1", [id]);

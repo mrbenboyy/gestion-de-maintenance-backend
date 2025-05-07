@@ -26,4 +26,5 @@ const createUploader = (folder) => {
 module.exports = {
   uploadUser: createUploader("users"),
   uploadClient: createUploader("clients"),
+  uploadFamille: createUploader("familles"),
 };

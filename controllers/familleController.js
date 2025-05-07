@@ -1,4 +1,5 @@
 const familleModel = require("../models/familleModel");
+const { uploadFamille } = require("../utils/upload");
 
 const validateFamilleData = (nom) => {
   if (!nom || nom.trim().length === 0) {
@@ -9,14 +10,19 @@ const validateFamilleData = (nom) => {
 
 const addFamille = async (req, res) => {
   const { nom } = req.body;
-
   const error = validateFamilleData(nom);
   if (error) return res.status(400).json({ error });
 
   try {
-    const newFamille = await familleModel.createFamille(nom);
+    const image = req.file
+      ? `/public/uploads/familles/${req.file.filename}`
+      : null;
+    const newFamille = await familleModel.createFamille(nom, image);
     res.status(201).json(newFamille);
   } catch (err) {
+    if (req.file) {
+      await fs.unlink(req.file.path);
+    }
     res.status(400).json({ error: err.message });
   }
 };
@@ -46,9 +52,24 @@ const modifyFamille = async (req, res) => {
   if (error) return res.status(400).json({ error });
 
   try {
-    const updated = await familleModel.updateFamille(req.params.id, nom);
+    const image = req.file
+      ? `/public/uploads/familles/${req.file.filename}`
+      : undefined;
+
+    const existing = await familleModel.getFamilleById(req.params.id);
+
+    const updated = await familleModel.updateFamille(req.params.id, nom, image);
+
+    // Supprimer l'ancienne image si nouvelle image uploadée
+    if (req.file && existing.image) {
+      await fs.unlink(path.join(__dirname, "..", existing.image));
+    }
+
     res.json(updated);
   } catch (err) {
+    if (req.file) {
+      await fs.unlink(req.file.path);
+    }
     res.status(400).json({ error: err.message });
   }
 };
