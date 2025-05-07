@@ -32,9 +32,9 @@ const createSite = async (siteData) => {
 
 const getSitesByClient = async (clientId) => {
   const result = await pool.query(
-    `SELECT * FROM sites 
-    WHERE client_id = $1 
-    ORDER BY created_at DESC`,
+    `SELECT id, nom, client_id, type_site, adresse, lat, lng, region 
+     FROM sites 
+     WHERE client_id = $1`,
     [clientId]
   );
   return result.rows;
@@ -87,7 +87,17 @@ const updateSite = async (id, siteData) => {
       updated_at = CURRENT_TIMESTAMP
     WHERE id = $9
     RETURNING *`,
-    [nom,client_id, type_site, adresse, lat, lng, nombre_visites_annuelles, region, id]
+    [
+      nom,
+      client_id,
+      type_site,
+      adresse,
+      lat,
+      lng,
+      nombre_visites_annuelles,
+      region,
+      id,
+    ]
   );
   return result.rows[0];
 };

@@ -18,19 +18,21 @@ const createIntervention = async (interventionData) => {
     [technicien_id]
   );
 
-  if (site.rows[0].region !== technicien.rows[0].region) {
-    throw new Error("Le technicien et le site ne sont pas dans la même région");
+  if (
+    site.rows[0].region.toLowerCase() !==
+    technicien.rows[0].region.toLowerCase()
+  ) {
+    throw new Error("Région mismatch (case insensitive)");
   }
 
   const result = await pool.query(
     `INSERT INTO interventions 
-    (client_id, site_id, technicien_id, date_planifiee, type_visite, created_by) 
-    VALUES ($1, $2, $3, $4, $5, $6) 
+    (client_id, site_id, technicien_id, date_planifiee, type_visite, created_by, status) 
+    VALUES ($1, $2, $3, $4, $5, $6, 'planifiee') 
     RETURNING 
       *,
       (SELECT nom FROM clients WHERE id = $1) as client_nom,
-      (SELECT nom || ' - ' || adresse FROM sites WHERE id = $2) as site_nom,
-      (SELECT localisation FROM sites WHERE id = $2) as localisation`,
+      (SELECT nom || ' - ' || adresse FROM sites WHERE id = $2) as site_nom`,
     [client_id, site_id, technicien_id, date_planifiee, type_visite, created_by]
   );
   return result.rows[0];
@@ -72,10 +74,11 @@ const updateIntervention = async (id, updateData) => {
       [technicienId]
     );
 
-    if (site.rows[0].region !== technicien.rows[0].region) {
-      throw new Error(
-        "Le technicien et le site ne sont pas dans la même région"
-      );
+    if (
+      site.rows[0].region.toLowerCase() !==
+      technicien.rows[0].region.toLowerCase()
+    ) {
+      throw new Error("Région mismatch (case insensitive)");
     }
   }
 

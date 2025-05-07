@@ -8,13 +8,13 @@ const { uploadClient } = require("../utils/upload");
 router.get(
   "/",
   authMiddleware,
-  checkRole(["admin"]),
+  checkRole(["admin", "assistante", "responsable_planning"]),
   clientController.getClients
 );
 router.get(
   "/:id",
   authMiddleware,
-  checkRole(["admin"]),
+  checkRole(["admin", "assistante", "responsable_planning"]),
   clientController.getClientById
 );
 router.post(

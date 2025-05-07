@@ -8,21 +8,27 @@ router.post("/", authMiddleware, checkRole(["admin"]), siteController.addSite);
 router.get(
   "/",
   authMiddleware,
-  checkRole(["admin", "assistante"]),
+  checkRole(["admin", "assistante", "responsable_planning"]),
   siteController.getAllSites
 );
 
 router.get(
   "/:id",
   authMiddleware,
-  checkRole(["admin", "assistante"]),
+  checkRole(["admin", "assistante", "responsable_planning"]),
   siteController.getSiteById
 );
 router.get(
   "/client/:clientId",
   authMiddleware,
-  checkRole(["admin", "assistante"]),
+  checkRole(["admin", "assistante", "responsable_planning"]),
   siteController.getClientSites
+);
+router.get(
+  "/details/:id",
+  authMiddleware,
+  checkRole(["admin", "responsable_planning"]),
+  siteController.getSiteDetails
 );
 router.put(
   "/:id",

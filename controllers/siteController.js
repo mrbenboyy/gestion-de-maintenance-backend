@@ -7,11 +7,7 @@ const validateSiteData = (data) => {
   if (!data.client_id) errors.push("Le client associé est obligatoire");
   if (!data.lat) errors.push("La latitude est obligatoire");
   if (!data.lng) errors.push("La longitude est obligatoire");
-  if (
-    !["Agence", "Bureau", "Entrepôt"].includes(
-      data.type_site
-    )
-  ) {
+  if (!["Agence", "Bureau", "Entrepôt"].includes(data.type_site)) {
     errors.push("Type de site invalide");
   }
   if (!data.adresse) errors.push("L'adresse est obligatoire");
@@ -102,6 +98,16 @@ const getSiteById = async (req, res) => {
   }
 };
 
+const getSiteDetails = async (req, res) => {
+  try {
+    const site = await siteModel.getSiteById(req.params.id);
+    if (!site) return res.status(404).json({ error: "Site non trouvé" });
+    res.json(site);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 module.exports = {
   addSite,
   getClientSites,
@@ -109,4 +115,5 @@ module.exports = {
   getSiteById,
   updateSite,
   deleteSite,
+  getSiteDetails,
 };

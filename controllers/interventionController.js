@@ -14,8 +14,12 @@ const validateInterventionData = (data) => {
 };
 
 const createIntervention = async (req, res) => {
+  console.log("Données reçues:", req.body);
   const errors = validateInterventionData(req.body);
-  if (errors.length > 0) return res.status(400).json({ errors });
+  if (errors.length > 0) {
+    console.log("Erreurs de validation:", errors);
+    return res.status(400).json({ errors });
+  }
 
   try {
     const newIntervention = await interventionModel.createIntervention({
