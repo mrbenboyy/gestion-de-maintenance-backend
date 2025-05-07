@@ -1,7 +1,9 @@
 const pool = require("../db");
+const fs = require("fs").promises;
+const path = require("path");
 
 const createAppareil = async (appareilData) => {
-  const { nom, famille_id } = appareilData;
+  const { nom, famille_id, image } = appareilData;
 
   // Vérifier l'existence de la famille
   const familleExist = await pool.query(
@@ -19,10 +21,9 @@ const createAppareil = async (appareilData) => {
     throw new Error("Nom déjà utilisé dans cette famille");
 
   const result = await pool.query(
-    `INSERT INTO appareils (nom, famille_id)
-     VALUES ($1, $2)
-     RETURNING *`,
-    [nom, famille_id]
+    `INSERT INTO appareils (nom, famille_id, image) // Modifié
+     VALUES ($1, $2, $3) RETURNING *`,
+    [nom, famille_id, image]
   );
 
   return result.rows[0];
@@ -30,7 +31,7 @@ const createAppareil = async (appareilData) => {
 
 const getAppareilById = async (id) => {
   const result = await pool.query(
-    `SELECT a.*, f.nom as famille_nom 
+    `SELECT a.*, f.nom as famille_nom, a.image 
      FROM appareils a
      LEFT JOIN familles f ON a.famille_id = f.id
      WHERE a.id = $1`,
@@ -41,7 +42,7 @@ const getAppareilById = async (id) => {
 
 const getAllAppareils = async () => {
   const result = await pool.query(
-    `SELECT a.*, f.nom as famille_nom 
+    `SELECT a.*, f.nom as famille_nom, a.image 
      FROM appareils a
      LEFT JOIN familles f ON a.famille_id = f.id
      ORDER BY a.nom`
@@ -62,7 +63,7 @@ const getAppareilsByFamille = async (familleId) => {
 };
 
 const updateAppareil = async (id, updateData) => {
-  const { nom, famille_id } = updateData;
+  const { nom, famille_id, image } = updateData;
 
   // Vérifier nouvelle famille si changement
   if (famille_id) {
@@ -77,18 +78,28 @@ const updateAppareil = async (id, updateData) => {
   const result = await pool.query(
     `UPDATE appareils
      SET nom = COALESCE($1, nom),
-         famille_id = COALESCE($2, famille_id)
-     WHERE id = $3
-     RETURNING *`,
-    [nom, famille_id, id]
+         famille_id = COALESCE($2, famille_id),
+         image = COALESCE($3, image) // Ajouté
+     WHERE id = $4 RETURNING *`,
+    [nom, famille_id, image, id]
   );
 
   return result.rows[0];
 };
 
 const deleteAppareil = async (id) => {
-  // Vérifier si utilisé dans des interventions
-  // (À compléter après création des interventions)
+  // Récupérer l'image
+  const appareil = await pool.query(
+    "SELECT image FROM appareils WHERE id = $1",
+    [id]
+  );
+
+  // Supprimer l'image
+  if (appareil.rows[0]?.image) {
+    await fs.unlink(path.join(__dirname, "..", appareil.rows[0].image));
+  }
+
+  // Vérifications d'usage
   await pool.query("DELETE FROM appareils WHERE id = $1", [id]);
 };
 

@@ -1,4 +1,6 @@
 const pool = require("../db");
+const fs = require("fs").promises;
+const path = require("path");
 
 const createArticle = async (articleData) => {
   const { code, famille_id, designation, stock, image } = articleData;
