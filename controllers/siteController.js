@@ -8,7 +8,7 @@ const validateSiteData = (data) => {
   if (!data.lat) errors.push("La latitude est obligatoire");
   if (!data.lng) errors.push("La longitude est obligatoire");
   if (
-    !["commercial", "industriel", "public", "habitation"].includes(
+    !["Agence", "Bureau", "Entrepôt"].includes(
       data.type_site
     )
   ) {
