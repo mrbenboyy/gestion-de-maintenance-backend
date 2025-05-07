@@ -23,7 +23,8 @@ app.use(
   })
 );
 app.use(express.json());
-app.use("/public", express.static("public"));
+const path = require('path');
+app.use('/public', express.static(path.join(__dirname, 'public')));
 
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);

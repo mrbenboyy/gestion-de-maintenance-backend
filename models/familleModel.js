@@ -25,9 +25,13 @@ const getFamilleById = async (id) => {
 };
 
 const getAllFamilles = async () => {
-  const result = await pool.query(
-    "SELECT *, image FROM familles ORDER BY created_at DESC"
-  );
+  const result = await pool.query(`
+    SELECT f.*, 
+      (SELECT COUNT(*) FROM articles WHERE famille_id = f.id) as articles_count,
+      (SELECT COUNT(*) FROM appareils WHERE famille_id = f.id) as appareils_count
+    FROM familles f
+    ORDER BY created_at DESC
+  `);
   return result.rows;
 };
 
