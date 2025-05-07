@@ -66,6 +66,7 @@ const getSiteById = async (id) => {
 const updateSite = async (id, siteData) => {
   const {
     nom,
+    client_id,
     type_site,
     adresse,
     lat,
@@ -76,16 +77,17 @@ const updateSite = async (id, siteData) => {
   const result = await pool.query(
     `UPDATE sites SET
       nom = $1,
-      type_site = $2,
-      adresse = $3,
-      lat = $4,
-      lng = $5,
-      nombre_visites_annuelles = $6,
-      region = $7,
+      client_id = $2,
+      type_site = $3,
+      adresse = $4,
+      lat = $5,
+      lng = $6,
+      nombre_visites_annuelles = $7,
+      region = $8,
       updated_at = CURRENT_TIMESTAMP
-    WHERE id = $8
+    WHERE id = $9
     RETURNING *`,
-    [nom, type_site, adresse, lat, lng, nombre_visites_annuelles, region, id]
+    [nom,client_id, type_site, adresse, lat, lng, nombre_visites_annuelles, region, id]
   );
   return result.rows[0];
 };
