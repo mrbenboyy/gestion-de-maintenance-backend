@@ -21,7 +21,7 @@ const createAppareil = async (appareilData) => {
     throw new Error("Nom déjà utilisé dans cette famille");
 
   const result = await pool.query(
-    `INSERT INTO appareils (nom, famille_id, image) // Modifié
+    `INSERT INTO appareils (nom, famille_id, image)
      VALUES ($1, $2, $3) RETURNING *`,
     [nom, famille_id, image]
   );
@@ -79,7 +79,7 @@ const updateAppareil = async (id, updateData) => {
     `UPDATE appareils
      SET nom = COALESCE($1, nom),
          famille_id = COALESCE($2, famille_id),
-         image = COALESCE($3, image) // Ajouté
+         image = COALESCE($3, image)
      WHERE id = $4 RETURNING *`,
     [nom, famille_id, image, id]
   );
