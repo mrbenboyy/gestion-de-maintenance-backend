@@ -146,7 +146,15 @@ const getInterventionById = async (id) => {
 
 const getInterventionsByTechnicien = async (technicienId) => {
   const result = await pool.query(
-    "SELECT * FROM interventions WHERE technicien_id = $1 ORDER BY date_planifiee",
+    `SELECT 
+      i.*, 
+      c.nom as client_nom, 
+      s.nom as site_nom 
+     FROM interventions i
+     JOIN clients c ON i.client_id = c.id
+     JOIN sites s ON i.site_id = s.id
+     WHERE technicien_id = $1 
+     ORDER BY date_planifiee`,
     [technicienId]
   );
   return result.rows;
