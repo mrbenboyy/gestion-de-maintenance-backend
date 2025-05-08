@@ -15,30 +15,20 @@ const transporter = nodemailer.createTransport({
 });
 
 const sendInterventionEmail = async (technicienEmail, interventionDetails) => {
+  console.log("Détails reçus:", interventionDetails);
   let localisationHtml = "";
 
   try {
-    if (interventionDetails.localisation) {
-      let mapsLink = "#";
-      const isIframe = interventionDetails.localisation.includes("<iframe");
-
-      if (isIframe) {
-        const coordMatch = interventionDetails.localisation.match(
-          /!2d(-?\d+\.\d+)!3d(-?\d+\.\d+)/
-        );
-
-        if (coordMatch) {
-          const longitude = coordMatch[1];
-          const latitude = coordMatch[2];
-          // Lien plus propre pour les emails
-          mapsLink = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
-        }
-      }
+    if (interventionDetails.lat && interventionDetails.lng) {
+      const destination = `${interventionDetails.lat},${interventionDetails.lng}`;
+      const googleMapsLink = `https://www.google.com/maps/dir/?api=1&destination=${destination}&travelmode=driving`;
 
       localisationHtml = `
-        <p><strong>Localisation :</strong>
-          <a href="${mapsLink}" target="_blank">Ouvrir dans Google Maps</a>
-        </p>
+        <p><strong>Localisation :</strong></p>
+        <a href="${googleMapsLink}" target="_blank">
+          🗺️ Voir l'itinéraire sur Google Maps
+        </a>
+        <p><em>(Ouvre l'application avec la destination pré-remplie)</em></p>
       `;
     }
   } catch (error) {

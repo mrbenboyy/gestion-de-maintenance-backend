@@ -98,7 +98,8 @@ const notifyTechnicien = async (req, res) => {
       site_nom: intervention.site_nom,
       date_planifiee: intervention.date_planifiee,
       type_visite: intervention.type_visite,
-      localisation: intervention.localisation,
+      lat: intervention.lat,
+      lng: intervention.lng,
     });
 
     res.json({ success: true });
