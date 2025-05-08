@@ -11,6 +11,13 @@ router.post(
   interventionController.createIntervention
 );
 
+router.post(
+  "/:id/notify",
+  authMiddleware,
+  checkRole(["admin", "responsable_planning"]),
+  interventionController.notifyTechnicien
+);
+
 router.put(
   "/:id",
   authMiddleware,

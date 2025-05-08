@@ -26,15 +26,6 @@ const createIntervention = async (req, res) => {
       ...req.body,
       created_by: req.user.id,
     });
-    const technicien = await userModel.getUserById(req.body.technicien_id);
-
-    await sendInterventionEmail(technicien.email, {
-      client_nom: newIntervention.client_nom,
-      site_nom: newIntervention.site_nom,
-      date_planifiee: newIntervention.date_planifiee,
-      type_visite: newIntervention.type_visite,
-      localisation: newIntervention.localisation,
-    });
     res.status(201).json(newIntervention);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -95,6 +86,27 @@ const deleteIntervention = async (req, res) => {
   }
 };
 
+const notifyTechnicien = async (req, res) => {
+  try {
+    const intervention = await interventionModel.getInterventionById(
+      req.params.id
+    );
+    const technicien = await userModel.getUserById(intervention.technicien_id);
+
+    await sendInterventionEmail(technicien.email, {
+      client_nom: intervention.client_nom,
+      site_nom: intervention.site_nom,
+      date_planifiee: intervention.date_planifiee,
+      type_visite: intervention.type_visite,
+      localisation: intervention.localisation,
+    });
+
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 module.exports = {
   createIntervention,
   updateIntervention,
@@ -112,4 +124,5 @@ module.exports = {
     }
   },
   deleteIntervention,
+  notifyTechnicien,
 };
