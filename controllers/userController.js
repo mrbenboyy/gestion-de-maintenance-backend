@@ -23,10 +23,10 @@ const getUserById = async (req, res) => {
 };
 
 const addUser = async (req, res) => {
-  const { nom, email, mot_de_passe, role, region, depot } = req.body;
+  const { nom, email, mot_de_passe, role, region_id, depot_id } = req.body;
   const image = req.file ? `/public/uploads/users/${req.file.filename}` : null;
 
-  if (role === "technicien" && (!data.region_id || !depot)) {
+  if (role === "technicien" && (!region_id || !depot_id)) {
     // Supprimer l'image si la validation échoue
     if (req.file) {
       const filePath = path.join(
@@ -54,8 +54,8 @@ const addUser = async (req, res) => {
       email,
       mot_de_passe,
       role,
-      region || null,
-      depot || null,
+      region_id || null,
+      depot_id || null,
       image
     );
     res.status(201).json(newUser);
@@ -82,7 +82,7 @@ const addUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
   const { id } = req.params;
-  const { nom, email, role, mot_de_passe, region, depot } = req.body;
+  const { nom, email, role, mot_de_passe, region_id, depot_id } = req.body;
   let newImagePath = req.file
     ? `/public/uploads/users/${req.file.filename}`
     : undefined;
@@ -98,7 +98,7 @@ const updateUser = async (req, res) => {
     // Validation pour les techniciens
     if (
       role === "technicien" &&
-      (region === undefined || depot === undefined)
+      (region_id === undefined || depot_id === undefined)
     ) {
       if (req.file) {
         const newImageFullPath = path.join(
@@ -123,7 +123,7 @@ const updateUser = async (req, res) => {
       email,
       role,
       mot_de_passe,
-      region,
+      region_id,
       depot,
       newImagePath
     );
