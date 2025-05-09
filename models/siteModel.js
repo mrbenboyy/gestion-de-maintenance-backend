@@ -54,9 +54,10 @@ const getAllSites = async () => {
 const getSiteById = async (id) => {
   const result = await pool.query(
     `
-      SELECT s.*, c.nom as client_nom 
+      SELECT s.*, c.nom as client_nom, r.id as region_id 
       FROM sites s
       JOIN clients c ON s.client_id = c.id
+      JOIN region r ON s.region_id = r.id
       WHERE s.id = $1
     `,
     [id]
