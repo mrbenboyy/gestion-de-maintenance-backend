@@ -12,6 +12,7 @@ const appareilRoutes = require("./routes/appareilRoutes");
 const ficheRoutes = require("./routes/ficheRoutes");
 const bonCommandeRoutes = require("./routes/bonCommandeRoutes");
 const regionRoutes = require("./routes/regionRoutes");
+const depotRoutes = require("./routes/depotRoutes");
 
 dotenv.config();
 const app = express();
@@ -38,6 +39,8 @@ app.use("/api/appareils", appareilRoutes);
 app.use("/api/fiches", ficheRoutes);
 app.use("/api/bons-commande", bonCommandeRoutes);
 app.use("/api/regions", regionRoutes);
+app.use("/api/depots", depotRoutes);
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
