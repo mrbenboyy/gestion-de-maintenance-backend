@@ -124,7 +124,7 @@ const updateUser = async (req, res) => {
       role,
       mot_de_passe,
       region_id,
-      depot,
+      depot_id,
       newImagePath
     );
 
