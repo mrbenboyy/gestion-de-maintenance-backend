@@ -26,7 +26,7 @@ const addUser = async (req, res) => {
   const { nom, email, mot_de_passe, role, region, depot } = req.body;
   const image = req.file ? `/public/uploads/users/${req.file.filename}` : null;
 
-  if (role === "technicien" && (!region || !depot)) {
+  if (role === "technicien" && (!data.region_id || !depot)) {
     // Supprimer l'image si la validation échoue
     if (req.file) {
       const filePath = path.join(

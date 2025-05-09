@@ -18,7 +18,7 @@ const createUser = async (
   email,
   mot_de_passe,
   role,
-  region,
+  region_id,
   depot,
   image
 ) => {
@@ -33,10 +33,10 @@ const createUser = async (
 
   const result = await pool.query(
     `INSERT INTO users 
-    (nom, email, mot_de_passe, role, region, depot, image) 
+    (nom, email, mot_de_passe, role, region_id, depot, image) 
     VALUES ($1, $2, $3, $4, $5, $6, $7) 
     RETURNING *`,
-    [nom, email, hashedPassword, role, region, depot, image]
+    [nom, email, hashedPassword, role, region_id, depot, image]
   );
   return result.rows[0];
 };
@@ -47,7 +47,7 @@ const updateUser = async (
   email,
   role,
   mot_de_passe,
-  region,
+  region_id,
   depot,
   image
 ) => {
@@ -71,9 +71,9 @@ const updateUser = async (
     params.push(role);
     paramIndex++;
   }
-  if (region !== undefined) {
-    setParts.push(`region = $${paramIndex}`);
-    params.push(region);
+  if (region_id !== undefined) {
+    setParts.push(`region_id = $${paramIndex}`);
+    params.push(region_id);
     paramIndex++;
   }
   if (depot !== undefined) {
@@ -114,7 +114,7 @@ const updateUser = async (
 
 const getTechniciens = async () => {
   const result = await pool.query(
-    "SELECT id, nom, email, region, depot FROM users WHERE role = 'technicien'"
+    "SELECT id, nom, email, region_id, depot FROM users WHERE role = 'technicien'"
   );
   return result.rows;
 };

@@ -9,11 +9,11 @@ const createSite = async (siteData) => {
     lat,
     lng,
     nombre_visites_annuelles,
-    region,
+    region_id,
   } = siteData;
   const result = await pool.query(
     `INSERT INTO sites 
-    (nom, client_id, type_site, adresse, lat, lng, nombre_visites_annuelles, region) 
+    (nom, client_id, type_site, adresse, lat, lng, nombre_visites_annuelles, region_id) 
     VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
     RETURNING *`,
     [
@@ -24,7 +24,7 @@ const createSite = async (siteData) => {
       lat,
       lng,
       nombre_visites_annuelles,
-      region,
+      region_id,
     ]
   );
   return result.rows[0];
@@ -32,7 +32,7 @@ const createSite = async (siteData) => {
 
 const getSitesByClient = async (clientId) => {
   const result = await pool.query(
-    `SELECT id, nom, client_id, type_site, adresse, lat, lng, region 
+    `SELECT id, nom, client_id, type_site, adresse, lat, lng, region_id 
      FROM sites 
      WHERE client_id = $1`,
     [clientId]
@@ -42,9 +42,10 @@ const getSitesByClient = async (clientId) => {
 
 const getAllSites = async () => {
   const result = await pool.query(`
-    SELECT s.*, c.nom as client_nom, c.image as client_image 
+    SELECT s.*, r.nom as region, c.nom as client_nom 
     FROM sites s
     JOIN clients c ON s.client_id = c.id
+    JOIN region r ON s.region_id = r.id
     ORDER BY s.created_at DESC
   `);
   return result.rows;
@@ -72,7 +73,7 @@ const updateSite = async (id, siteData) => {
     lat,
     lng,
     nombre_visites_annuelles,
-    region,
+    region_id,
   } = siteData;
   const result = await pool.query(
     `UPDATE sites SET
@@ -83,7 +84,7 @@ const updateSite = async (id, siteData) => {
       lat = $5,
       lng = $6,
       nombre_visites_annuelles = $7,
-      region = $8,
+      region_id = $8,
       updated_at = CURRENT_TIMESTAMP
     WHERE id = $9
     RETURNING *`,
@@ -95,7 +96,7 @@ const updateSite = async (id, siteData) => {
       lat,
       lng,
       nombre_visites_annuelles,
-      region,
+      region_id,
       id,
     ]
   );

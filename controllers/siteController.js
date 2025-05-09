@@ -7,6 +7,7 @@ const validateSiteData = (data) => {
   if (!data.client_id) errors.push("Le client associé est obligatoire");
   if (!data.lat) errors.push("La latitude est obligatoire");
   if (!data.lng) errors.push("La longitude est obligatoire");
+  if (!data.region_id) errors.push("La région est obligatoire");
   if (!["Agence", "Bureau", "Entrepôt"].includes(data.type_site)) {
     errors.push("Type de site invalide");
   }
