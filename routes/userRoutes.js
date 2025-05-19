@@ -34,7 +34,12 @@ router.get(
 router.put(
   "/:id",
   authMiddleware,
-  checkRole(["admin"]),
+  (req, res, next) => {
+    if (req.user.role === "admin" || req.params.id === req.user.id.toString()) {
+      req.isAdmin = req.user.role === "admin";
+      next();
+    }
+  },
   uploadUser.single("image"),
   userController.updateUser
 );

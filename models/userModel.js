@@ -49,7 +49,8 @@ const updateUser = async (
   mot_de_passe,
   region_id,
   depot_id,
-  image
+  image,
+  isAdmin
 ) => {
   let setParts = [];
   const params = [];
@@ -66,20 +67,22 @@ const updateUser = async (
     params.push(email);
     paramIndex++;
   }
-  if (role !== undefined) {
-    setParts.push(`role = $${paramIndex}`);
-    params.push(role);
-    paramIndex++;
-  }
-  if (region_id !== undefined) {
-    setParts.push(`region_id = $${paramIndex}`);
-    params.push(region_id === "" ? null : region_id);
-    paramIndex++;
-  }
-  if (depot_id !== undefined) {
-    setParts.push(`depot_id = $${paramIndex}`);
-    params.push(depot_id === "" ? null : depot_id);
-    paramIndex++;
+  if (isAdmin) {
+    if (role !== undefined) {
+      setParts.push(`role = $${paramIndex}`);
+      params.push(role);
+      paramIndex++;
+    }
+    if (region_id !== undefined) {
+      setParts.push(`region_id = $${paramIndex}`);
+      params.push(region_id === "" ? null : region_id);
+      paramIndex++;
+    }
+    if (depot_id !== undefined) {
+      setParts.push(`depot_id = $${paramIndex}`);
+      params.push(depot_id === "" ? null : depot_id);
+      paramIndex++;
+    }
   }
 
   if (image !== undefined) {

@@ -82,6 +82,20 @@ const addUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
   const { id } = req.params;
+
+  // Vérification des permissions
+  const isAdmin = req.user.role === "admin";
+  const isSelfUpdate = req.user.id.toString() === id;
+
+  // Bloquer la modification du rôle pour les non-admins
+  if (!isAdmin && req.body.role) {
+    return res.status(403).json({ error: "Modification du rôle interdite" });
+  }
+
+  // Bloquer region_id/depot_id pour les non-admins
+  if (!isAdmin && (req.body.region_id || req.body.depot_id)) {
+    return res.status(403).json({ error: "Action non autorisée" });
+  }
   const { nom, email, role, mot_de_passe, region_id, depot_id } = req.body;
   let newImagePath = req.file
     ? `/public/uploads/users/${req.file.filename}`
