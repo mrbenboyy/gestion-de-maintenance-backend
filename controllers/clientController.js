@@ -28,7 +28,11 @@ const validateClientCreationData = (data) => {
   if (!data.telephone) errors.push("Le téléphone est obligatoire");
   if (!data.adresse) errors.push("L'adresse est obligatoire");
   if (!data.email) errors.push("L'email est obligatoire");
-  if (!data.mot_de_passe) errors.push("Le mot de passe est obligatoire");
+  if (data.mot_de_passe !== undefined && data.mot_de_passe !== "") {
+    if (data.mot_de_passe.length < 6) {
+      errors.push("Le mot de passe doit faire au moins 6 caractères");
+    }
+  }
 
   // Validation des contrats (uniquement si présents)
   if (data.contrat && !["SAV", "Detection"].includes(data.contrat)) {
