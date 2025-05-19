@@ -54,11 +54,12 @@ const modifyFamille = async (req, res) => {
   if (error) return res.status(400).json({ error });
 
   try {
+    const existing = await familleModel.getFamilleById(req.params.id);
+
+    // Ne modifier l'image que si req.file existe
     const image = req.file
       ? `/public/uploads/familles/${req.file.filename}`
-      : undefined;
-
-    const existing = await familleModel.getFamilleById(req.params.id);
+      : existing.image; // garder l'image existante si pas d'upload
 
     const updated = await familleModel.updateFamille(req.params.id, nom, image);
 
