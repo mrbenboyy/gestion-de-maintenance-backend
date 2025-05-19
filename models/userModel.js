@@ -73,14 +73,15 @@ const updateUser = async (
   }
   if (region_id !== undefined) {
     setParts.push(`region_id = $${paramIndex}`);
-    params.push(region_id);
+    params.push(region_id === "" ? null : region_id);
     paramIndex++;
   }
   if (depot_id !== undefined) {
     setParts.push(`depot_id = $${paramIndex}`);
-    params.push(depot_id);
+    params.push(depot_id === "" ? null : depot_id);
     paramIndex++;
   }
+
   if (image !== undefined) {
     setParts.push(`image = $${paramIndex}`);
     params.push(image);
