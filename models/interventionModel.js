@@ -40,6 +40,7 @@ const getAllInterventions = async () => {
       i.*, 
       c.nom as client_nom, 
       s.nom as site_nom,
+      s.adresse as site_adresse,
       u.nom as technicien_nom
      FROM interventions i
      JOIN clients c ON i.client_id = c.id
@@ -137,7 +138,8 @@ const getInterventionsByTechnicien = async (technicienId) => {
     `SELECT 
       i.*, 
       c.nom as client_nom, 
-      s.nom as site_nom 
+      s.nom as site_nom,
+      s.adresse as site_adresse // Ajouter ceci
      FROM interventions i
      JOIN clients c ON i.client_id = c.id
      JOIN sites s ON i.site_id = s.id
