@@ -4,6 +4,13 @@ const interventionController = require("../controllers/interventionController");
 const authMiddleware = require("../middlewares/authMiddleware");
 const checkRole = require("../middlewares/checkRole");
 
+router.get(
+  "/",
+  authMiddleware,
+  checkRole(["admin", "responsable_planning"]),
+  interventionController.getAllInterventions
+);
+
 router.post(
   "/",
   authMiddleware,

@@ -34,6 +34,22 @@ const createIntervention = async (interventionData) => {
   return result.rows[0];
 };
 
+const getAllInterventions = async () => {
+  const result = await pool.query(
+    `SELECT 
+      i.*, 
+      c.nom as client_nom, 
+      s.nom as site_nom,
+      u.nom as technicien_nom
+     FROM interventions i
+     JOIN clients c ON i.client_id = c.id
+     JOIN sites s ON i.site_id = s.id
+     JOIN users u ON i.technicien_id = u.id
+     ORDER BY date_planifiee DESC`
+  );
+  return result.rows;
+};
+
 const updateIntervention = async (id, updateData) => {
   let region_id;
   const {
@@ -137,6 +153,7 @@ const deleteIntervention = async (id) => {
 };
 module.exports = {
   createIntervention,
+  getAllInterventions,
   updateIntervention,
   updateInterventionStatus,
   getInterventionById,

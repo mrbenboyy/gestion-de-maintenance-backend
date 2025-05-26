@@ -32,6 +32,15 @@ const createIntervention = async (req, res) => {
   }
 };
 
+const getAllInterventions = async (req, res) => {
+  try {
+    const interventions = await interventionModel.getAllInterventions();
+    res.json(interventions);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 const updateIntervention = async (req, res) => {
   try {
     const updatedIntervention = await interventionModel.updateIntervention(
@@ -110,6 +119,7 @@ const notifyTechnicien = async (req, res) => {
 
 module.exports = {
   createIntervention,
+  getAllInterventions,
   updateIntervention,
   updateStatus,
   getIntervention,
